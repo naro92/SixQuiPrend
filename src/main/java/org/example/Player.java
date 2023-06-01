@@ -6,6 +6,7 @@ public class Player {
     private ArrayList<Card> hand;
 
     private int score;
+    private Card cardToPlay;
 
     public Player(String name) {
         this.name = name;
@@ -18,8 +19,8 @@ public class Player {
         hand.add(drawnCard);
     }
 
-    public Card playCard(int index) {
-        return hand.remove(index);
+    public void chooseCard(Card card) {
+        cardToPlay = hand.remove(hand.indexOf(card));
     }
 
     public void addScore(int score) {
@@ -33,6 +34,12 @@ public class Player {
     public ArrayList<Card> getHand() {
         return hand;
     }
+
+    public Card getCardToPlay() {
+        return cardToPlay;
+    }
+
+    public int getCardToPlayValue() { return cardToPlay.getNumber(); }
 
     public int getScore() {
         return score;

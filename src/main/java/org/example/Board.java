@@ -12,36 +12,51 @@ public class Board {
         }
     }
 
-    public boolean addCard(Card card) {
+    private List<Card> chooseRow(Card card) {
+        int chosenRowIndex = 4;
+        int minOffset = 0;
+
         for (List<Card> row : rows) {
-            if (row.isEmpty() || card.getNumber() > row.get(row.size() - 1).getNumber()) {
-                row.add(card);
-                if (row.size() > 5) {
-                    removeCards(row);
+            if (card.getNumber() > row.get(row.size() - 1).getNumber()) {
+                int offset = card.getNumber() - row.get(row.size() - 1).getNumber();
+                if (minOffset == 0 || offset < minOffset) {
+                    minOffset = offset;
+                    chosenRowIndex = rows.indexOf(row);
                 }
-                return true;
             }
         }
 
-        // Si aucune rangée ne peut recevoir la carte, elle est placée dans la rangée avec le total de points le plus bas
-        // et cette rangée est vidée
-        List<Card> rowToReplace = rows.get(0);
-        int minPoints = getTotalPoints(rowToReplace);
-        for (List<Card> row : rows) {
-            int points = getTotalPoints(row);
-            if (points < minPoints) {
-                minPoints = points;
-                rowToReplace = row;
-            }
-        }
-        rowToReplace.clear();
-        rowToReplace.add(card);
-        return false;
+        return rows.get(chosenRowIndex);
     }
 
-    private void removeCards(List<Card> row) {
-        // Ici, vous pouvez gérer la suppression des cartes d'une rangée qui a plus de 5 cartes.
-        // Par exemple, vous pouvez ajouter les points des cartes supprimées au score du joueur qui a posé la carte.
+    public int addCard(Card card) {
+        int pointsTaken = 0;
+        try {
+            List<Card> chosenRow = chooseRow(card);
+            if (chosenRow.size() < 5) {
+                chosenRow.add(card);
+            } else {
+                // Si la rangée choisie possède 5 cartes, le joueur récupère les points de la rangée
+                // et cette rangée est vidée
+                pointsTaken = getTotalPoints(chosenRow);
+                chosenRow.clear();
+                chosenRow.add(card);
+            }
+
+        } catch(Exception e) {
+            // Si aucune rangée ne peut recevoir la carte, elle est placée dans la rangée avec le total de points le plus bas
+            // et cette rangée est vidée
+            List<Card> rowToReplace = getLeastPointRow();
+            pointsTaken = getTotalPoints(rowToReplace);
+            rowToReplace.clear();
+            rowToReplace.add(card);
+        }
+
+        return pointsTaken;
+    }
+
+    public List<List<Card>> getRows() {
+        return rows;
     }
 
     private int getTotalPoints(List<Card> row) {
@@ -50,5 +65,20 @@ public class Board {
             total += card.getPoints();
         }
         return total;
+    }
+
+    private List<Card> getLeastPointRow() {
+        int returnedRowIndex = 0;
+        int minPoints = 0;
+
+        for (List<Card> row : rows) {
+            int rowPoints = getTotalPoints(row);
+            if (minPoints == 0 || rowPoints < minPoints) {
+                minPoints = rowPoints;
+                returnedRowIndex = rows.indexOf(row);
+            }
+        }
+
+        return rows.get(returnedRowIndex);
     }
 }

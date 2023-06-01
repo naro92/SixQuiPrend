@@ -1,5 +1,6 @@
 package org.example;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Game {
@@ -19,22 +20,18 @@ public class Game {
     }
 
     public void playRound() {
-        if (gameOver) {
-            return;
+        List<Player> orderedPlayers = determineOrder();
+
+        for (Player player : orderedPlayers) {
+            player.addScore(board.addCard(player.getCardToPlay()));
         }
-        for (Player player : players) {
-            Card card = player.playCard(0); // Ici, vous pouvez implémenter une logique pour permettre aux joueurs de choisir la carte qu'ils veulent jouer.
-            boolean success = board.addCard(card);
-            if (!success) {
-                player.addScore(card.getPoints());
+
+        if (players.get(0).getHand().isEmpty()) {
+            if (deck.isEmpty()) {
+                gameOver = true;
+            } else {
+                dealCards();
             }
-        }
-        if (deck.isEmpty() && players.get(0).getHand().isEmpty()) {
-            gameOver = true;
-            Player winner = determineWinner();
-            System.out.println("Le gagnant est " + winner.getName() + " avec " + winner.getScore() + " points.");
-        } else {
-            dealCards();
         }
     }
 
@@ -46,7 +43,7 @@ public class Game {
         }
     }
 
-    private Player determineWinner() {
+    public Player determineWinner() {
         Player winner = players.get(0);
         for (Player player : players) {
             if (player.getScore() < winner.getScore()) {
@@ -54,5 +51,24 @@ public class Game {
             }
         }
         return winner;
+    }
+
+    private List<Player> determineOrder() {
+        List<Player> orderedList = new ArrayList<>(players);
+        orderedList.sort(Comparator.comparingInt(Player::getCardToPlayValue));
+
+        return orderedList;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
     }
 }
