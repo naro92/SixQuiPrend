@@ -10,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -90,6 +91,9 @@ public class GameApp extends Application {
                 Button button = new Button(Integer.toString(card.getNumber()));
                 button.setOnAction(e -> handleCardChoice(card, dialog));
                 box.getChildren().add(button);
+                CardComponent cardComponent = new CardComponent(true);
+                cardComponent.setCardValue(card);
+                box.getChildren().add(cardComponent);
             }
 
             dialog.getDialogPane().setContent(box);
