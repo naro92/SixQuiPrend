@@ -25,7 +25,6 @@ public class GameApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        // Create your game here
         List<String> playerNames = Arrays.asList("Player1", "Player2");
         game = new Game(playerNames);
 
@@ -44,7 +43,7 @@ public class GameApp extends Application {
 
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("6 nimmt!");
+        primaryStage.setTitle("6 Qui Prend!");
         primaryStage.show();
 
         new Thread(this::playGame).start();
@@ -52,21 +51,20 @@ public class GameApp extends Application {
 
     private void playGame() {
         while (!game.isGameOver()) {
+            Platform.runLater(this::updateGUI);
             for (Player player : game.getPlayers()) {
                 chooseCard(player);
             }
 
-            Platform.runLater(this::updateGUI);
-
-
+            game.playRound();
 
             if (game.isGameOver()) {
                 Player winner = game.determineWinner();
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Game Over");
-                    alert.setHeaderText("The game is over!");
-                    alert.setContentText("The winner is " + winner.getName() + " with " + winner.getScore() + " points.");
+                    alert.setTitle("Partie Terminée !");
+                    alert.setHeaderText("La Partie est Finie!");
+                    alert.setContentText("Le gagnant est " + winner.getName() + " avec " + winner.getScore() + " points.");
                     alert.showAndWait();
                 });
             }
@@ -77,18 +75,20 @@ public class GameApp extends Application {
         latch = new CountDownLatch(1);
         Platform.runLater(() -> {
             Dialog<Card> dialog = new Dialog<>();
-            dialog.setTitle("Choose a card");
-            dialog.setHeaderText("Player " + player.getName() + ", choose a card to play");
+            dialog.setTitle("Choisissez une carte");
+            dialog.setHeaderText("Joueur " + player.getName() + ", choisissez une carte à placer.");
 
             ButtonType playButtonType = new ButtonType("Play", ButtonBar.ButtonData.OK_DONE);
             dialog.getDialogPane().getButtonTypes().addAll(playButtonType, ButtonType.CANCEL);
+            dialog.getDialogPane().lookupButton(playButtonType).setVisible(false);
+            dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setVisible(false);
 
             HBox box = new HBox();
             box.setSpacing(10);
 
             for (Card card : player.getHand()) {
-                Button button = new Button(card.toString());
-                button.setOnAction(e -> handleCardChoice(card));
+                Button button = new Button(Integer.toString(card.getNumber()));
+                button.setOnAction(e -> handleCardChoice(card, dialog));
                 box.getChildren().add(button);
             }
 
@@ -104,8 +104,10 @@ public class GameApp extends Application {
         player.chooseCard(chosenCard);
     }
 
-    private void handleCardChoice(Card card) {
+    private void handleCardChoice(Card card, Dialog<Card> dialog) {
         chosenCard = card;
+        dialog.close();
+        updateGUI();
         latch.countDown();
     }
 

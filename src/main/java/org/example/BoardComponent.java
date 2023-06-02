@@ -22,9 +22,9 @@ public class BoardComponent extends VBox {
         List<List<Card>> rows = game.getBoard().getRows();
         for (int i = 0; i < rows.size(); i++) {
             List<Card> row = rows.get(i);
-            StringBuilder sb = new StringBuilder("Row " + (i + 1) + ": ");
+            StringBuilder sb = new StringBuilder("Rangée " + (i + 1) + ": ");
             for (Card card : row) {
-                sb.append(card.getNumber()).append(" ");
+                sb.append(card.getNumber()).append(" ").append("(").append(card.getPoints()).append(" Points)").append(" ");
             }
             rowLabels.get(i).setText(sb.toString());
         }

@@ -16,6 +16,7 @@ public class Game {
         }
         board = new Board();
         deck = new Deck();
+        setupBoard();
         dealCards();
     }
 
@@ -58,6 +59,12 @@ public class Game {
         orderedList.sort(Comparator.comparingInt(Player::getCardToPlayValue));
 
         return orderedList;
+    }
+
+    private void setupBoard() {
+        for (List<Card> row : board.getRows()) {
+            row.add(deck.drawCard());
+        }
     }
 
     public List<Player> getPlayers() {

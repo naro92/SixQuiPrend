@@ -18,6 +18,6 @@ public class PlayerComponent extends HBox {
 
     public void update(Game game) {
         nameLabel.setText(player.getName());
-        scoreLabel.setText(String.valueOf(player.getScore()));
+        scoreLabel.setText(" Score : " + player.getScore());
     }
 }
