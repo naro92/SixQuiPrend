@@ -26,7 +26,7 @@ public class GameApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        List<String> playerNames = Arrays.asList("Player1", "Player2");
+        List<String> playerNames = Arrays.asList("Arno", "Anthony");
         game = new Game(playerNames);
 
         // Create your GUI components here and add them to the root
